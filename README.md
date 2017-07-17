@@ -20,6 +20,16 @@ to the `require` section of your composer.json.
 
 ## Configuration ##
 
+Add component 'storage'
+
+```
+'components' => [
+        'storage' => [
+            'class' => 'years\storage\Storage',
+        ],
+   ]
+```
+
 Add key `filesystems` to `params.php`
 
 ```
