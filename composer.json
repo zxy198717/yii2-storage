@@ -24,7 +24,7 @@
     "league/flysystem": "^1.0",
     "yiisoft/yii2": "~2.0.5",
     "aliyuncs/oss-sdk-php": "~2.0",
-    "xutl/yii2-collection": "dev-master"
+    "xutl/yii2-collection": "~1.0.0"
   },
   "autoload": {
     "psr-4": {
