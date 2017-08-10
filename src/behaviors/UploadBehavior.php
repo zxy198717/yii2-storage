@@ -197,7 +197,7 @@ class UploadBehavior extends Behavior
             if (count($values) == 1) {
                 $model->setAttribute($attribute, $values[0]);
             } else {
-                $model->setAttribute($attribute, $values->toArray());
+                $model->setAttribute($attribute, implode(',', $values->toArray()));
             }
 
             if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
