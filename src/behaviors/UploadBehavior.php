@@ -178,6 +178,7 @@ class UploadBehavior extends Behavior
         if (count($fs = UploadedFile::getInstances($model, $attribute)) > 0) {
             foreach ($fs as $file) {
                 if ($file instanceof UploadedFile) {
+                    $file->name = $this->getFileName($file);
                     $files[] = $file;
                 }
             }
