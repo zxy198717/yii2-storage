@@ -97,11 +97,12 @@ class UploadBehavior extends Behavior
         if (empty($this->attributes)) {
             throw new InvalidConfigException('The "attributes" property must be set.');
         }
+        if (Yii::$app->has("storage")) {
+            $this->_fileSystem = Yii::$app->storage->disk($this->disk);
 
-        $this->_fileSystem = Yii::$app->storage->disk($this->disk);
-
-        if(!$this->_fileSystem) {
-            throw new InvalidConfigException('The "disk" property must be set with supported drivers. please check config in `config/filesystems.php');
+            if(!$this->_fileSystem) {
+                throw new InvalidConfigException('The "disk" property must be set with supported drivers. please check config in `config/filesystems.php');
+            }
         }
     }
     /**
@@ -136,22 +137,22 @@ class UploadBehavior extends Behavior
                     foreach ($validators ?: []  as $validator) {
                         if ($validator instanceof FileValidator) {
                             $find_file_validator = true;
-                            $model->setAttribute($attribute, $validator->maxFiles == 1 ? $fs[0] : $fs);
+                            $model->$attribute = $validator->maxFiles == 1 ? $fs[0] : $fs;
                         } elseif($validator instanceof ImageValidator) {
                             $find_file_validator = true;
-                            $model->setAttribute($attribute,  $fs[0]);
+                            $model->$attribute = $fs[0];
                         }
                     }
                     if(!$find_file_validator) {
-                        $model->setAttribute($attribute, count($fs) == 1 ? $fs[0] : $fs);
+                        $model->$attribute = count($fs) == 1 ? $fs[0] : $fs;
                     }
                 } else {
                     $value = $model->$attribute;
                     if (! ($model->$attribute == '__DEL__' || (is_array($value) && count($value) > 0 && $value[0] == "__DEL__"))) {
-                        $model->setAttribute($attribute, $model->getOldAttribute($attribute));
+                        $model->$attribute = $model->getOldAttribute($attribute);
                     } else {
                         $this->_temp_attributes[$attribute] = '__DEL__';
-                        $model->setAttribute($attribute, '');
+                        $model->$attribute = '';
                     }
                 }
             }
@@ -165,7 +166,7 @@ class UploadBehavior extends Behavior
                 if (isset($this->_temp_attributes[$attribute])) {
                     $model->{$attribute} = "";
                 } else {
-                    $model->setAttribute($attribute, $model->getOldAttribute($attribute));
+                    $model->$attribute = $model->getOldAttribute($attribute);
                 }
             }
         }
@@ -196,9 +197,9 @@ class UploadBehavior extends Behavior
             });
 
             if (count($values) == 1) {
-                $model->setAttribute($attribute, $values[0]);
+                $model->$attribute = $values[0];
             } else {
-                $model->setAttribute($attribute, implode(',', $values->toArray()));
+                $model->$attribute = implode(',', $values->toArray());
             }
 
             if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
